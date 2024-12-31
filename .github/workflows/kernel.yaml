@@ -46,7 +46,9 @@ jobs:
                 export CC=aarch64-linux-gnu-gcc
                 export LANG=C
                 export $(dpkg-architecture -aarm64)
+                cd linux-6.13-rc5
                 fakeroot debian/rules clean binary-headers binary-rockchip do_mainline_build=true
+                cd ..
 
             - name: Bundle the generated .deb
               run: 7z a -ttar linux-rockchip-arm64.tar linux-*.deb

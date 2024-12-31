@@ -42,10 +42,10 @@ jobs:
             - name: Build the kernel
               shell: bash
               run: |
-                export $(dpkg-architecture -aarm64)
                 export CROSS_COMPILE=aarch64-linux-gnu-
                 export CC=aarch64-linux-gnu-gcc
                 export LANG=C
+                export $(dpkg-architecture -aarm64)
                 fakeroot debian/rules clean binary-headers binary-rockchip do_mainline_build=true
 
             - name: Bundle the generated .deb

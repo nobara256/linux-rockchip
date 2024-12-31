@@ -51,11 +51,13 @@ jobs:
                 cd ..
 
             - name: Bundle the generated .deb as a .tar
-              run: tar --create --file linux-rockchip-arm64.tar linux-*.deb
+              run: tar --create --file linux-6.13-rc5-arm64.tar linux-*.deb
 
             - name: Upload the generated .deb
               uses: actions/upload-artifact@v4.5.0
               with:
                 name: linux-rockchip
-                path: ./linux-rockchip-arm64.tar
+                path: |
+                  ./linux-6.13-rc5-arm64.tar
+                  ./linux-6.13-rc5.tar.gz
                 if-no-files-found: error

@@ -40,8 +40,5 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: Dump the package
-              run: echo ${{ matrix.package }}
-
-            - name: Downloading linux-${{ matrix.package.version }}
-              run: wget ${{ matrix.package.source }}
+              run: echo ${{ matrix }}
 

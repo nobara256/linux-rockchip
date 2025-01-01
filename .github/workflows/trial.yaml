@@ -12,9 +12,9 @@ jobs:
     # This workflow contains a single job called "kernel-build"
     get-kernel-source-array:
         # The type of runner that the job will run on
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         outputs:
-            array: ${{ steps.gen-array.outputs.array }}
+            matrix: ${{ steps.gen-array.outputs.array }}
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
@@ -32,8 +32,7 @@ jobs:
         needs: get-kernel-source-array
 
         strategy:
-            matrix:
-                package: ${{ fromJSON(needs.get-kernel-source-array.outputs.array) }}
+            matrix: ${{ fromJSON(needs.get-kernel-source-array.outputs.matrix) }}
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:

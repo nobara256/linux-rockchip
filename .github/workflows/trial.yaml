@@ -14,7 +14,7 @@ jobs:
         # The type of runner that the job will run on
         runs-on: ubuntu-24.04
         outputs:
-            matrix: ${{ steps.gen-array.outputs.array }}
+            xarray: ${{ steps.gen-array.outputs.array }}
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
@@ -32,7 +32,7 @@ jobs:
         needs: get-kernel-source-array
 
         strategy:
-            matrix: ${{ fromJSON(needs.get-kernel-source-array.outputs.matrix) }}
+            matrix: ${{ fromJSON(needs.get-kernel-source-array.outputs.xarray) }}
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:

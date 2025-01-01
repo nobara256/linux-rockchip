@@ -32,13 +32,13 @@ jobs:
         needs: get-kernel-source-array
 
         strategy:
-            yarray: ${{ fromJSON(needs.get-kernel-source-array.outputs.xarray) }}
+            matrix: ${{ fromJSON(needs.get-kernel-source-array.outputs.xarray) }}
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - uses: actions/checkout@v4
 
-            - name: Dump the package
-              run: echo ${{ yarray.source }}
+            - name: Download linux-${{ matrix.source }}
+              run: wget ${{ matrix.source }}
 

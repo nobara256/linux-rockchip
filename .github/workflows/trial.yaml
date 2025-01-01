@@ -50,7 +50,7 @@ jobs:
                 patch --strip=1 --directory=linux-${{ matrix.version }} < patch/oracular.patch
                 patch --strip=1 --directory=linux-${{ matrix.version }} < patch/overlay-dtc.patch
                 cp -f kernel.config linux-${{ matrix.version }}/debian.rockchip/config/config.common.ubuntu
-                cp -f dts/rk3588* linux-${{ matrix.version }}/arch/arm64/boot/dts/rockchip
+                cp -f dts/rockchip/rk3588* linux-${{ matrix.version }}/arch/arm64/boot/dts/rockchip
 
 
 

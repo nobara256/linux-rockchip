@@ -30,7 +30,7 @@ jobs:
 
         strategy:
             matrix:
-                package: ${{ fromJSON(get-kernel-source-array.outputs.array) }}
+                package: ${{ fromJSON(needs.get-kernel-source-array.outputs.array) }}
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
@@ -38,8 +38,8 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: Dump the package
-              run: echo ${{ package }}
+              run: echo ${{ matrix.package }}
 
-            - name: Downloading linux-${{ package.version }}
-              run: wget ${{ package.source }}
+            - name: Downloading linux-${{ matrix.package.version }}
+              run: wget ${{ matrix.package.source }}
 

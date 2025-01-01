@@ -39,6 +39,16 @@ jobs:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - uses: actions/checkout@v4
 
-            - name: Download linux-${{ matrix.source }}
+            - name: Download linux-${{ matrix.version }} package
               run: wget ${{ matrix.source }}
+
+            - name: Extract linux-${{ matrix.version }} package
+              run: tar -xzf $(basename ${{ matrix.source }})
+
+            - name: Patch linux-${{ matrix.version }} package
+              run:
+                patch --strip=1 --directory=linux-${{ matrix.version }} < patch/oracular.patch
+                patch --strip=1 --directory=linux-${{ matrix.version }} < patch/overlay-dtc.patch
+
+
 

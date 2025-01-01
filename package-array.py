@@ -12,6 +12,13 @@ def kernel_ver_selector(package):
         package["version"] == payload["latest_stable"]["version"]
     )
 
-print("array="+dumps(list(filter(kernel_ver_selector, payload["releases"])), indent=None))
+print(
+    "array="+dumps({
+            "include": list(filter(kernel_ver_selector, payload["releases"]))
+        },
+    indent=None
+    ),
+    end=""
+)
 
 

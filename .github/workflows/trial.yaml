@@ -40,15 +40,17 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: Download linux-${{ matrix.version }} package
-              run: wget ${{ matrix.source }}
+              run: wget --quiet ${{ matrix.source }}
 
             - name: Extract linux-${{ matrix.version }} package
-              run: tar -xzf $(basename ${{ matrix.source }})
+              run: tar -xf $(basename ${{ matrix.source }})
 
             - name: Patch linux-${{ matrix.version }} package
-              run:
+              run: |
                 patch --strip=1 --directory=linux-${{ matrix.version }} < patch/oracular.patch
                 patch --strip=1 --directory=linux-${{ matrix.version }} < patch/overlay-dtc.patch
+                cp -f kernel.config linux-${{ matrix.version }}/debian.rockchip/config/config.common.ubuntu
+                cp -f dts/rk3588* linux-${{ matrix.version }}/arch/arm64/boot/dts/rockchip
 
 
 

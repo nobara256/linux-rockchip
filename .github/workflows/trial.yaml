@@ -40,5 +40,5 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: Dump the package
-              run: echo ${{ matrix }}
+              run: echo ${{ matrix.source }}
 

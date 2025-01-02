@@ -77,7 +77,7 @@ jobs:
             - name: Upload linux-${{ matrix.version }} package
               uses: actions/upload-artifact@v4.5.0
               with:
-                name: linux-${{ matrix.version }
+                name: linux-${{ matrix.version }}-packed
                 path: |
                   linux-${{ matrix.version }}/debian.rockchip/config/config.common.ubuntu
                   linux-${{ matrix.version }}/debian.rockchip/changelog

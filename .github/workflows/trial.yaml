@@ -69,7 +69,7 @@ jobs:
               run: |
                 echo CROSS_COMPILE=$CROSS_COMPILE, CC=$CC, LANG=$LANG
 
-              env: |
+              env:
                 CROSS_COMPILE: aarch64-linux-gnu-
                 CC: aarch64-linux-gnu-gcc
                 LANG: C

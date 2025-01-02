@@ -64,6 +64,7 @@ jobs:
                   --urgency medium                                            \
                   -v $KERNEL_VERSION-${KERNEL_RELEASE_DATE//-}                \
                   "Linux $KERNEL_VERSION ubuntu-rockchip oracular"
+              shell: bash
               env:
                 DEBEMAIL: nobara256@oracular.ubuntu
                 DEBFULLNAME: Nobara Kurokawa
@@ -71,9 +72,9 @@ jobs:
                 KERNEL_RELEASE_DATE: ${{ matrix.released.isodate }}
 
             - name: Build linux-${{ matrix.version }} package
-              run: |
-                echo CROSS_COMPILE=$CROSS_COMPILE, CC=$CC, LANG=$LANG
-
+              run: fakeroot debian/rules clean defaultconfigs binary-headers binary-rockchip do_mainline_build=true
+              shell: bash
+              working-directory: linux-${{ matrix.version }}
               env:
                 CROSS_COMPILE: aarch64-linux-gnu-
                 CC: aarch64-linux-gnu-gcc
@@ -82,10 +83,7 @@ jobs:
             - name: Upload linux-${{ matrix.version }} package
               uses: actions/upload-artifact@v4.5.0
               with:
-                name: linux-${{ matrix.version }}-packed
-                path: |
-                  linux-${{ matrix.version }}/debian.rockchip/config/config.common.ubuntu
-                  linux-${{ matrix.version }}/debian.rockchip/changelog
-                  linux-${{ matrix.version }}/arch/arm64/boot/dts/rockchip/rk3588*
+                name: linux-${{ matrix.version }}-rockchip
+                path: linux-*.deb
                 compression-level: 0
                 if-no-files-found: error

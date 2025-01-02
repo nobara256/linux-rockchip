@@ -10,11 +10,11 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
     # This workflow contains a single job called "kernel-build"
-    get-kernel-source-array:
+    get-kernel-release:
         # The type of runner that the job will run on
         runs-on: ubuntu-22.04
         outputs:
-            xarray: ${{ steps.gen-array.outputs.array }}
+            xarray: ${{ steps.create-array.outputs.array }}
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
@@ -22,17 +22,17 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: Fetch kernel release kernel.org
-              id: gen-array
+              id: create-array
               run: python3 package-array.py "$(curl -s https://www.kernel.org/releases.json)" >> $GITHUB_OUTPUT
 
     # This workflow contains a single job called "kernel-build"
     gen-kernel-package:
         # The type of runner that the job will run on
         runs-on: ubuntu-22.04
-        needs: get-kernel-source-array
+        needs: get-kernel-release
 
         strategy:
-            matrix: ${{ fromJSON(needs.get-kernel-source-array.outputs.xarray) }}
+            matrix: ${{ fromJSON(needs.get-kernel-release.outputs.xarray) }}
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
@@ -50,13 +50,13 @@ jobs:
                 python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools         \
                 python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
-            - name: Download linux-${{ matrix.version }} package
+            - name: Downloading source package [linux-${{ matrix.version }}]
               run: wget --quiet ${{ matrix.source }}
 
-            - name: Extract linux-${{ matrix.version }} package
+            - name: Extracting source package [linux-${{ matrix.version }}]
               run: tar -xf $(basename ${{ matrix.source }})
 
-            - name: Patch linux-${{ matrix.version }} package
+            - name: Patching source package [linux-${{ matrix.version }}]
               run: |
                 patch --strip=1 --directory=linux-$KERNEL_VERSION < patch/oracular.patch
                 patch --strip=1 --directory=linux-$KERNEL_VERSION < patch/overlay-dtc.patch
@@ -73,7 +73,8 @@ jobs:
               shell: bash
               env:
                 DEBEMAIL: nobara256@oracular.ubuntu
-                DEBFULLNAME: Nobara Kurokawa
+                DEBFULLNAME: Kurokawa Nobara
+                DEB_BUILD_OPTIONS: nocheck
                 KERNEL_VERSION: ${{ matrix.version }}
                 KERNEL_RELEASE_DATE: ${{ matrix.released.isodate }}
 
@@ -85,6 +86,29 @@ jobs:
                 CROSS_COMPILE: aarch64-linux-gnu-
                 CC: aarch64-linux-gnu-gcc
                 LANG: C
+                DEB_BUILD_OPTIONS: nocheck
+                DEB_TARGET_ARCH: arm64
+                DEB_TARGET_ARCH_ABI: base
+                DEB_TARGET_ARCH_BITS: 64
+                DEB_TARGET_ARCH_CPU: arm64
+                DEB_TARGET_ARCH_ENDIAN: little
+                DEB_TARGET_ARCH_LIBC: gnu
+                DEB_TARGET_ARCH_OS: linux
+                DEB_TARGET_GNU_CPU: aarch64
+                DEB_TARGET_GNU_SYSTEM: linux-gnu
+                DEB_TARGET_GNU_TYPE: aarch64-linux-gnu
+                DEB_TARGET_MULTIARCH: aarch64-linux-gnu
+                DEB_HOST_ARCH: arm64
+                DEB_HOST_ARCH_ABI: base
+                DEB_HOST_ARCH_BITS: 64
+                DEB_HOST_ARCH_CPU: arm64
+                DEB_HOST_ARCH_ENDIAN: little
+                DEB_HOST_ARCH_LIBC: gnu
+                DEB_HOST_ARCH_OS: linux
+                DEB_HOST_GNU_CPU: aarch64
+                DEB_HOST_GNU_SYSTEM: linux-gnu
+                DEB_HOST_GNU_TYPE: aarch64-linux-gnu
+                DEB_HOST_MULTIARCH: aarch64-linux-gnu
 
             - name: Upload linux-${{ matrix.version }} package
               uses: actions/upload-artifact@v4.5.0

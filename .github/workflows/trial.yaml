@@ -12,7 +12,7 @@ jobs:
     # This workflow contains a single job called "kernel-build"
     get-kernel-release:
         # The type of runner that the job will run on
-        runs-on: ubuntu-22.04
+        runs-on: ubuntu-24.04
         outputs:
             xarray: ${{ steps.create-array.outputs.array }}
 
@@ -28,7 +28,7 @@ jobs:
     # This workflow contains a single job called "kernel-build"
     gen-kernel-package:
         # The type of runner that the job will run on
-        runs-on: ubuntu-22.04
+        runs-on: ubuntu-24.04
         needs: get-kernel-release
 
         strategy:
@@ -44,11 +44,11 @@ jobs:
                 sudo apt update
                 sudo apt upgrade -y
                 sudo apt install -y build-essential gcc-aarch64-linux-gnu bison  devscripts        \
-                qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support              \
+                qemu-user-static qemu-system-arm qemu-efi-aarch64 u-boot-tools binfmt-support      \
                 debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted            \
-                udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3          \
+                udev dosfstools uuid-runtime git-lfs device-tree-compiler python3 dctrl-tools      \
                 python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools         \
-                python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
+                python3-distutils-extra python3-pkg-resources swig libfdt-dev libpython3-dev
 
             - name: Downloading source package [linux-${{ matrix.version }}]
               run: wget --quiet ${{ matrix.source }}
@@ -79,7 +79,7 @@ jobs:
                 KERNEL_RELEASE_DATE: ${{ matrix.released.isodate }}
 
             - name: Build linux-${{ matrix.version }} package
-              run: fakeroot debian/rules clean defaultconfigs
+              run: fakeroot debian/rules clean defaultconfigs binary-headers binary-rockchip do_mainline_build=true
               shell: bash
               working-directory: linux-${{ matrix.version }}
               env:
@@ -92,8 +92,6 @@ jobs:
               uses: actions/upload-artifact@v4.5.0
               with:
                 name: linux-${{ matrix.version }}-rockchip
-                path: |
-                  ./linux-${{ matrix.version }}/debian.rockchip/changelog
-                  ./linux-${{ matrix.version }}/debian.rockchip/config/config.common.ubuntu
+                path: linux-*${{ matrix.version }}*.deb
                 compression-level: 0
                 if-no-files-found: error

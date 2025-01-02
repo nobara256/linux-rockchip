@@ -21,7 +21,7 @@ jobs:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - uses: actions/checkout@v4
 
-            - name: Get the kernel package list
+            - name: Fetch kernel release kernel.org
               id: gen-array
               run: python3 package-array.py "$(curl -s https://www.kernel.org/releases.json)" >> $GITHUB_OUTPUT
 
@@ -42,7 +42,13 @@ jobs:
             - name: Install dependencies.
               run: |
                 sudo apt update
-                sudo apt install -y devscripts
+                sudo apt upgrade -y
+                sudo apt install -y build-essential gcc-aarch64-linux-gnu bison  devscripts        \
+                qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support              \
+                debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted            \
+                udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3          \
+                python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools         \
+                python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
 
             - name: Download linux-${{ matrix.version }} package
               run: wget --quiet ${{ matrix.source }}

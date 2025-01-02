@@ -8,7 +8,6 @@ payload = loads(argv[1])
 
 # Append package versions to be skipped.
 ignore_kernel_package = {
-    "6.12.7",
     "6.11.11"
 }
 

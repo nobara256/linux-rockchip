@@ -32,7 +32,7 @@ jobs:
         needs: get-kernel-source-array
 
         strategy:
-            matrix: ${{ fromJSON(needs.get-kernel-source.outputs.xarray) }}
+            matrix: ${{ fromJSON(needs.get-kernel-source-array.outputs.xarray) }}
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:

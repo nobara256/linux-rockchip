@@ -28,11 +28,11 @@ jobs:
     # This workflow contains a single job called "kernel-build"
     gen-kernel-package:
         # The type of runner that the job will run on
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         needs: get-kernel-source-array
 
         strategy:
-            matrix: ${{ fromJSON(needs.get-kernel-source-array.outputs.xarray) }}
+            matrix: ${{ fromJSON(needs.get-kernel-source.outputs.xarray) }}
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
@@ -47,10 +47,40 @@ jobs:
 
             - name: Patch linux-${{ matrix.version }} package
               run: |
-                patch --strip=1 --directory=linux-${{ matrix.version }} < patch/oracular.patch
-                patch --strip=1 --directory=linux-${{ matrix.version }} < patch/overlay-dtc.patch
-                cp -f kernel.config linux-${{ matrix.version }}/debian.rockchip/config/config.common.ubuntu
-                cp -f dts/rockchip/rk3588* linux-${{ matrix.version }}/arch/arm64/boot/dts/rockchip
+                patch --strip=1 --directory=linux-$KERNEL_VERSION < patch/oracular.patch
+                patch --strip=1 --directory=linux-$KERNEL_VERSION < patch/overlay-dtc.patch
+                cp -f kernel.config linux-$KERNEL_VERSION/debian.rockchip/config/config.common.ubuntu
+                cp -f dts/rockchip/rk3588* linux-$KERNEL_VERSION/arch/arm64/boot/dts/rockchip
+                dch                                                           \
+                  --create                                                    \
+                  --package linux-rockchip                                    \
+                  --changelog linux-$KERNEL_VERSION/debian.rockchip/changelog \
+                  --distribution oracular                                     \
+                  --urgency medium                                            \
+                  -v $KERNEL_VERSION-${KERNEL_RELEASE_DATE//-}                \
+                  "Linux $KERNEL_VERSION ubuntu-rockchip oracular"
+              env:
+                DEBEMAIL: nobara256@oracular.ubuntu
+                DEBFULLNAME: Nobara Kurokawa
+                KERNEL_VERSION: ${{ matrix.version }}
+                KERNEL_RELEASE_DATE: ${{ matrix.released.isodate }}
 
+            - name: Build linux-${{ matrix.version }} package
+              run: |
+                echo CROSS_COMPILE=$CROSS_COMPILE, CC=$CC, LANG=$LANG
 
+              env: |
+                CROSS_COMPILE: aarch64-linux-gnu-
+                CC: aarch64-linux-gnu-gcc
+                LANG: C
 
+            - name: Upload linux-${{ matrix.version }} package
+              uses: actions/upload-artifact@v4.5.0
+              with:
+                name: linux-${{ matrix.version }
+                path: |
+                  linux-${{ matrix.version }}/debian.rockchip/config/config.common.ubuntu
+                  linux-${{ matrix.version }}/debian.rockchip/changelog
+                  linux-${{ matrix.version }}/arm64/boot/dts/rockchip/rk3588*
+                compression-level: 0
+                if-no-files-found: error

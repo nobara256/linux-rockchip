@@ -11,8 +11,9 @@ on:
 jobs:
     # This workflow contains a single job called "kernel-build"
     get-kernel-source-array:
+        run-name: kernel.org package
         # The type of runner that the job will run on
-        runs-on: ubuntu-24.04
+        runs-on: ubuntu-22.04
         outputs:
             xarray: ${{ steps.gen-array.outputs.array }}
 
@@ -27,8 +28,9 @@ jobs:
 
     # This workflow contains a single job called "kernel-build"
     gen-kernel-package:
+        run-name: Kernel package
         # The type of runner that the job will run on
-        runs-on: ubuntu-24.04
+        runs-on: ubuntu-22.04
         needs: get-kernel-source-array
 
         strategy:

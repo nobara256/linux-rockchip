@@ -79,7 +79,7 @@ jobs:
                 KERNEL_RELEASE_DATE: ${{ matrix.released.isodate }}
 
             - name: Build linux-${{ matrix.version }} package
-              run: fakeroot debian/rules clean defaultconfigs binary-headers binary-rockchip do_mainline_build=true
+              run: fakeroot debian/rules clean defaultconfigs
               shell: bash
               working-directory: linux-${{ matrix.version }}
               env:
@@ -87,33 +87,13 @@ jobs:
                 CC: aarch64-linux-gnu-gcc
                 LANG: C
                 DEB_BUILD_OPTIONS: nocheck
-                DEB_TARGET_ARCH: arm64
-                DEB_TARGET_ARCH_ABI: base
-                DEB_TARGET_ARCH_BITS: 64
-                DEB_TARGET_ARCH_CPU: arm64
-                DEB_TARGET_ARCH_ENDIAN: little
-                DEB_TARGET_ARCH_LIBC: gnu
-                DEB_TARGET_ARCH_OS: linux
-                DEB_TARGET_GNU_CPU: aarch64
-                DEB_TARGET_GNU_SYSTEM: linux-gnu
-                DEB_TARGET_GNU_TYPE: aarch64-linux-gnu
-                DEB_TARGET_MULTIARCH: aarch64-linux-gnu
-                DEB_HOST_ARCH: arm64
-                DEB_HOST_ARCH_ABI: base
-                DEB_HOST_ARCH_BITS: 64
-                DEB_HOST_ARCH_CPU: arm64
-                DEB_HOST_ARCH_ENDIAN: little
-                DEB_HOST_ARCH_LIBC: gnu
-                DEB_HOST_ARCH_OS: linux
-                DEB_HOST_GNU_CPU: aarch64
-                DEB_HOST_GNU_SYSTEM: linux-gnu
-                DEB_HOST_GNU_TYPE: aarch64-linux-gnu
-                DEB_HOST_MULTIARCH: aarch64-linux-gnu
 
             - name: Upload linux-${{ matrix.version }} package
               uses: actions/upload-artifact@v4.5.0
               with:
                 name: linux-${{ matrix.version }}-rockchip
-                path: linux-*.deb
+                path: |
+                  ./linux-${{ matrix.version }}/debian.rockchip/changelog
+                  ./linux-${{ matrix.version }}/debian.rockchip/config/config.common.ubuntu
                 compression-level: 0
                 if-no-files-found: error
